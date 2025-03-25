@@ -1,0 +1,17 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: nginx-scaled-object
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: nginx-nodejs-app
+  triggers:
+  - type: http
+    metadata:
+      url: "http://nginx-service.default.svc.cluster.local"  # Uygulamanın health check URL'si
+      interval: "1m"  # her dakika kontrol
+      threshold: "1"  # Eğer istek almazsa, pod sayısını 0'a çek
+  cooldownPeriod: 10  # Pod'ları scale down etmeyi bekleme süresi (5 dakika)
+  minReplicaCount: 0  # Minimum replica sayısı, istek gelmezse 0 pod olacak
+  maxReplicaCount: 2  # Maksimum pod sayısı
